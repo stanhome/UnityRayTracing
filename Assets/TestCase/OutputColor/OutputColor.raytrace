@@ -6,6 +6,7 @@
 void OutputColorRayGenShader()
 {
     uint2 dispatchIdx = DispatchRaysIndex().xy;
+    uint2 dispatchDim = DispatchRaysDimensions().xy;
    
-    RenderTarget[dispatchIdx] = float4(dispatchIdx.x & dispatchIdx.y, (dispatchIdx.x & 15)/15.0, (dispatchIdx.y & 15)/15.0, 0.0);
+    RenderTarget[dispatchIdx] = float4((float)dispatchIdx.x / dispatchDim.x, (float)dispatchIdx.y / dispatchDim.y, 0.2f, 1.0f);
 }
