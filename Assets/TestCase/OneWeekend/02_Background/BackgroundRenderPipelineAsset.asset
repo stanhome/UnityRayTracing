@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1ac00842e8ee054dbef1ba317e137c4, type: 3}
-  m_Name: BackgroundTutorialAsset
+  m_Script: {fileID: 11500000, guid: 9e73f79d8045c69448ff57e96f2d3aa4, type: 3}
+  m_Name: BackgroundRenderPipelineAsset
   m_EditorClassIdentifier: 
-  shader: {fileID: 4807578003741378534, guid: db8351a4c784676468c1f8255cc8e715, type: 3}
-  tutorialName: BackgroundTutorial
+  tutorialAsset: {fileID: 11400000, guid: 84c043e747e855e479db1aa053b7fc33, type: 2}

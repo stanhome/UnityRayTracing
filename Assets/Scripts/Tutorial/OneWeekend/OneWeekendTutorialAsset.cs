@@ -15,8 +15,8 @@ public class OneWeekendTutorialAsset : RayTracingTutorialAsset
 		switch (tutorialName)
 		{
 			default:
-			case "OutputColorTutorial": ret = new OutputColorTutorial(this); break;
-			case "BackgroundTutorial": ret = new BackgroundTutorial(this); break;
+			case "OutputColorTutorial":
+			case "BackgroundTutorial": ret = new OutputColorTutorial(this); break;
 		}
 
 		return ret;
