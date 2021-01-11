@@ -28,4 +28,11 @@ void SphereRaygenShader()
     RenderTarget[dispatchIdx] = rayIntersection.color;
 }
 
+[shader("miss")]
+void MissShader(inout RayIntersection rayIntersection: SV_RayPayload) {
+    float3 origin = WorldRayOrigin();
+    float3 direction = WorldRayDirection();
 
+
+    rayIntersection.color = float4(bgColor(origin, direction), 1.0f);
+}

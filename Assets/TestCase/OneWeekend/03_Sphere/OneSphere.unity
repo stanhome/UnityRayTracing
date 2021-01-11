@@ -293,7 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46ae320442f8cd34aa318c6eb1aa2281, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newRenderPipelineAsset: {fileID: 11400000, guid: c2eded5113f5d5047ae1df90fc8d2697,
+  newRenderPipelineAsset: {fileID: 11400000, guid: 1272b4829c83bc74bb12ed7c00f09393,
     type: 2}
 --- !u!1 &1814372540
 GameObject:
@@ -359,7 +359,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: aa9e5b3fccc18834d99e07ac789da9c5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

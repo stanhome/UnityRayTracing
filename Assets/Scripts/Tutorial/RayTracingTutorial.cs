@@ -20,8 +20,8 @@ public abstract class RayTracingTutorial
 		return true;
 	}
 
-	public virtual void render(ScriptableRenderContext context, Camera camera) {
-		CameraShaderParams.setupCamera(camera);
+	public virtual void render(ScriptableRenderContext context, Camera c) {
+		CameraShaderParams.setupCamera(c);
 	}
 
 	public virtual void dispose(bool isDisposing) {

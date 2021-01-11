@@ -17,6 +17,7 @@ public class OneWeekendTutorialAsset : RayTracingTutorialAsset
 			default:
 			case "OutputColorTutorial":
 			case "BackgroundTutorial": ret = new OutputColorTutorial(this); break;
+			case "OneSphereTutorial": ret = new OneSphereTutorial(this); break;
 		}
 
 		return ret;

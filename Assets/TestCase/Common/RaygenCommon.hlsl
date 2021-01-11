@@ -10,6 +10,10 @@ struct RayIntersection {
 	float4 color;
 };
 
+struct AttributeData {
+	float2 barycentrics;
+};
+
 
 RaytracingAccelerationStructure _AccelerationStructure;
 
