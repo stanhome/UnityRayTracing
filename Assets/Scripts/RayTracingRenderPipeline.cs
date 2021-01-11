@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 
 public class RayTracingRenderPipeline : RenderPipeline
@@ -10,10 +11,9 @@ public class RayTracingRenderPipeline : RenderPipeline
 
 	private RayTracingTutorial _tutorial;
 
+
 	public RayTracingRenderPipeline(RayTracingRenderPipelineAsset asset) {
 		_asset = asset;
-
-		// acceleration structure
 
 		_tutorial = _asset.tutorialAsset.createTutorial();
 		if (_tutorial == null)
@@ -43,6 +43,7 @@ public class RayTracingRenderPipeline : RenderPipeline
 		});
 
 		// build acceleration structure
+		RayTracingObjectManager.instance.buildAccelerationStructure();
 
 		foreach (Camera c in cameras)
 		{
@@ -56,5 +57,17 @@ public class RayTracingRenderPipeline : RenderPipeline
 		}
 
 		EndFrameRendering(context, cameras);
+	}
+
+	protected override void Dispose(bool isDisposing)
+	{
+		base.Dispose(isDisposing);
+
+		if (_tutorial != null)
+		{
+			_tutorial.dispose(isDisposing);
+			_tutorial = null;
+		}
+
 	}
 }

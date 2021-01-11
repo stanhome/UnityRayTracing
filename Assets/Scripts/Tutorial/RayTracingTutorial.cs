@@ -62,6 +62,8 @@ public abstract class RayTracingTutorial
 		return ret;
 	}
 
+	public readonly static int SID_accelerationStructure = Shader.PropertyToID("_AccelerationStructure");
+
 	/////////////////////////////////////////////////////////////////////////
 	// Shader Params
 	private static class CameraShaderParams {
