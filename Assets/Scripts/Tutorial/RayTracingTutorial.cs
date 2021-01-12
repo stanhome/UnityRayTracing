@@ -8,7 +8,7 @@ public abstract class RayTracingTutorial
 {
 	protected RayTracingTutorialAsset _asset;
 
-	private RayTracingRenderPipeline _pipeline;
+	protected RayTracingRenderPipeline _pipeline;
 
 	protected RayTracingTutorial(RayTracingTutorialAsset asset) {
 		_asset = asset;
@@ -62,7 +62,28 @@ public abstract class RayTracingTutorial
 		return ret;
 	}
 
+	private readonly Dictionary<int, Vector4> _outputTargetSizesCache = new Dictionary<int, Vector4>();
+	protected static readonly int SID_outputTargetSize = Shader.PropertyToID("_RenderTargetSize");
+
+	protected Vector4 getOutputTargetSize(Camera c) {
+		Vector4 ret;
+
+		do
+		{
+			int id = c.GetInstanceID();
+			if (_outputTargetSizesCache.TryGetValue(id, out ret)) break;
+
+			ret = new Vector4(c.pixelWidth, c.pixelHeight, 1.0f / c.pixelWidth, 1.0f / c.pixelHeight);
+			_outputTargetSizesCache.Add(id, ret);
+
+		} while (false);
+
+		return ret;
+	}
+
 	public readonly static int SID_accelerationStructure = Shader.PropertyToID("_AccelerationStructure");
+	public readonly static int SID_PRNGStates = Shader.PropertyToID("_PRNGStates");
+	public readonly static int SID_alphaAA = Shader.PropertyToID("_AlphaAA");
 
 	/////////////////////////////////////////////////////////////////////////
 	// Shader Params

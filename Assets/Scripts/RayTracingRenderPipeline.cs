@@ -11,6 +11,8 @@ public class RayTracingRenderPipeline : RenderPipeline
 
 	private RayTracingTutorial _tutorial;
 
+	// for MersenneTwister random
+	private readonly Dictionary<int, ComputeBuffer> _PRNGStates = new Dictionary<int, ComputeBuffer>();
 
 	public RayTracingRenderPipeline(RayTracingRenderPipelineAsset asset) {
 		_asset = asset;
@@ -69,5 +71,34 @@ public class RayTracingRenderPipeline : RenderPipeline
 			_tutorial = null;
 		}
 
+	}
+
+	public ComputeBuffer getPRNGStates(Camera c) {
+		int id = c.GetInstanceID();
+		ComputeBuffer buf = null;
+
+		do
+		{
+			if (_PRNGStates.TryGetValue(id, out buf)) break;
+
+			buf = new ComputeBuffer(c.pixelWidth * c.pixelHeight, 4 * 4, ComputeBufferType.Structured, ComputeBufferMode.Immutable);
+
+			var mt19937 = new MersenneTwister.MT.mt19937ar_cok_opt_t();
+			mt19937.init_genrand((uint)System.DateTime.Now.Ticks);
+
+			int dataSize = c.pixelWidth * c.pixelHeight * 4;
+			uint[] data = new uint[dataSize];
+			for (int i = 0; i < dataSize; i++)
+			{
+				data[i] = mt19937.genrand_int32();
+			}
+
+			buf.SetData(data);
+
+			_PRNGStates.Add(id, buf);
+
+		} while (false);
+
+		return buf;
 	}
 }

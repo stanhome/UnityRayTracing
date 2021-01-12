@@ -4,6 +4,7 @@ using UnityEngine.Experimental.Rendering;
 
 public class RayTracingObjectManager : MonoBehaviour
 {
+	[Header("Raytracing objects")]
 	// need to ray tracing object's renderer
 	public Renderer[] renderers;
 	public GameObject RayTracingObjectRoot = null;
@@ -16,6 +17,9 @@ public class RayTracingObjectManager : MonoBehaviour
 
 	private RayTracingAccelerationStructure _accelerationStructure;
 	public RayTracingAccelerationStructure accelerationStructure { get { return _accelerationStructure; } }
+
+	[Header("Config")]
+	public bool enableAA = true;
 
 
 	private static RayTracingObjectManager s_instance = null;

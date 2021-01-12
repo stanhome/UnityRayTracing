@@ -18,6 +18,7 @@ public class OneWeekendTutorialAsset : RayTracingTutorialAsset
 			case "OutputColorTutorial":
 			case "BackgroundTutorial": ret = new OutputColorTutorial(this); break;
 			case "OneSphereTutorial": ret = new OneSphereTutorial(this); break;
+			case "AntialiasingTutorial": ret = new AntialiasingTutorial(this); break;
 		}
 
 		return ret;

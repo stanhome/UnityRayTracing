@@ -293,7 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46ae320442f8cd34aa318c6eb1aa2281, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newRenderPipelineAsset: {fileID: 11400000, guid: 1272b4829c83bc74bb12ed7c00f09393,
+  newRenderPipelineAsset: {fileID: 11400000, guid: b8200038bdb97b7489b393f254dbdf23,
     type: 2}
 --- !u!1 &1814372540
 GameObject:
