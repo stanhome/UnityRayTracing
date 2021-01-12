@@ -1,6 +1,6 @@
-﻿Shader "Unlit/OneSphere"
+﻿Shader "Unlit/SphereNormal"
 {
-    Properties
+	Properties
     {
         _Color ("Main Color", Color) = (1, 1, 1, 1)
     }
@@ -60,6 +60,7 @@
 			HLSLPROGRAM
 
 			#pragma raytracing test
+			#include "UnityRaytracingMeshUtils.cginc"
 			#include "./../../Common/RaygenCommon.hlsl"
 
 			//cbuffer UnityPerMaterial {
@@ -67,14 +68,36 @@
 				float4 _Color;
 			}
 
-			[shader("closesthit")]
-			void closestHitShader(inout RayIntersection rayIntersection: SV_RayPayload, AttributeData attributeData: SV_IntersectionAttributes) {
-				rayIntersection.color = _Color;
+			struct IntersectionVertex {
+				float3 normalInModel;
+			};
+
+			void fetchIntersectionVertex(uint vertexIdx, out IntersectionVertex outVertex) {
+				outVertex.normalInModel = UnityRayTracingFetchVertexAttribute3(vertexIdx, kVertexAttributeNormal);
 			}
 
+			[shader("closesthit")]
+			void closestHitShader(inout RayIntersection rayIntersection: SV_RayPayload, AttributeData attributeData: SV_IntersectionAttributes) {
+				// fetch the indices of the current triangle
+				uint3 triangleIndices = UnityRayTracingFetchTriangleIndices(PrimitiveIndex());
+
+				// fetch the vertices
+				IntersectionVertex v0, v1, v2;
+				fetchIntersectionVertex(triangleIndices.x, v0);
+				fetchIntersectionVertex(triangleIndices.y, v1);
+				fetchIntersectionVertex(triangleIndices.z, v2);
+
+				// compute the full barycentric coordinates
+				float3 barycentricCoordinates = float3(1.0 - attributeData.barycentrics.x - attributeData.barycentrics.y, attributeData.barycentrics.x, attributeData.barycentrics.y);
+
+				float3 normalInModel = INTERPOLATE_BY_BARYCENTRIC(v0.normalInModel, v1.normalInModel, v2.normalInModel, barycentricCoordinates);
+				float3x3 objectToWorld = (float3x3)ObjectToWorld3x4();
+				float3 normalInWorld = normalize(mul(objectToWorld, normalInModel));
+
+				rayIntersection.color = float4(0.5f * (normalInWorld + 1.0), 0.0f);
+			}
 
 			ENDHLSL
 		}
 	}
-
 }
