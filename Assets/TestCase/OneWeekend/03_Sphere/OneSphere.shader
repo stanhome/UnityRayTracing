@@ -1,4 +1,4 @@
-﻿Shader "Unlit/OneSphere"
+﻿Shader "RayTracing/OneSphere"
 {
     Properties
     {

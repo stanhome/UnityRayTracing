@@ -11,6 +11,7 @@ float _CameraFarDistance;
 struct RayIntersection {
 	float4 color;
 	uint4 PRNGStates;
+	int remainingDepth;
 };
 
 struct AttributeData {

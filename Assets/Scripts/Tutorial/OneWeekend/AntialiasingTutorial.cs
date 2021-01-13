@@ -27,7 +27,7 @@ public class AntialiasingTutorial : RayTracingTutorial
 		}
 		else {
 			float alphaAA = _AAFrameCount > 0 ? 1.0f / _AAFrameCount : 1.0f;
-			if (_AAFrameCount > 1000)
+			if (_AAFrameCount > 5000)
 			{
 				alphaAA = 0;
 			}
