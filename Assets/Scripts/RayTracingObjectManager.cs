@@ -20,6 +20,7 @@ public class RayTracingObjectManager : MonoBehaviour
 
 	[Header("Config")]
 	public bool enableAA = true;
+	public bool isStaticObj = true;
 
 
 	private static RayTracingObjectManager s_instance = null;
@@ -79,7 +80,7 @@ public class RayTracingObjectManager : MonoBehaviour
 
 	public void buildAccelerationStructure()
 	{
-		if (!_isDirty) return;
+		if (!_isDirty && isStaticObj) return;
 
 		// create a new acceleration structure to clear
 		_accelerationStructure.Dispose();
