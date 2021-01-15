@@ -20,6 +20,7 @@ public class OneWeekendTutorialAsset : RayTracingTutorialAsset
 			case "OneSphereTutorial": ret = new OneSphereTutorial(this); break;
 			case "AntialiasingTutorial": 
 			case "DiffuseTutorial": ret = new AntialiasingTutorial(this); break;
+			case "FocusCameraTutorial": ret = new FocusCameraTutorial(this); break;
 		}
 
 		return ret;

@@ -2,11 +2,18 @@
 
 #define INTERPOLATE_BY_BARYCENTRIC(A0, A1, A2, BARYCENTRIC_COORDINATES) (A0 * BARYCENTRIC_COORDINATES.x + A1 * BARYCENTRIC_COORDINATES.y + A2 * BARYCENTRIC_COORDINATES.z)
 
-cbuffer name {
+cbuffer CameraBuffer {
 float4x4 _InvCameraViewProj;
 float3 _WorldSpaceCameraPos;
 float _CameraFarDistance;
+// focus camera
+float3 _FocusCameraLeftBottomCorner;
+float3 _FocusCameraRight;
+float3 _FocusCameraUp;
+float2 _FocusCameraSize;
+float _FocusCameraHalfApertureV;
 };
+
 
 struct RayIntersection {
 	float4 color;
@@ -50,5 +57,16 @@ inline void generateCameraRayWithOffset(out float3 origin, out float3 direction,
 	worldPos.xyz /= worldPos.w;
 
 	origin = _WorldSpaceCameraPos.xyz;
+	direction = normalize(worldPos.xyz - origin);
+}
+
+inline void generateFocusCameraRayWithOffset(out float3 origin, out float3 direction, float2 offset, float2 apertureOffset) {
+	// random offset for pixel
+	float2 xy = DispatchRaysIndex().xy + offset;
+	float2 uv = xy / DispatchRaysDimensions().xy;
+
+	float3 worldPos = _FocusCameraLeftBottomCorner + uv.x * _FocusCameraSize.x * _FocusCameraRight + uv.y * _FocusCameraSize.y * _FocusCameraUp;
+	origin = _WorldSpaceCameraPos.xyz + _FocusCameraHalfApertureV * apertureOffset.x * _FocusCameraRight + _FocusCameraHalfApertureV * apertureOffset.y * _FocusCameraUp;
+
 	direction = normalize(worldPos.xyz - origin);
 }

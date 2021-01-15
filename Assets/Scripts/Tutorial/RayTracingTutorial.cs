@@ -10,6 +10,8 @@ public abstract class RayTracingTutorial
 
 	protected RayTracingRenderPipeline _pipeline;
 
+	private int _AAFrameCount = 0;
+
 	protected RayTracingTutorial(RayTracingTutorialAsset asset) {
 		_asset = asset;
 	}
@@ -22,6 +24,11 @@ public abstract class RayTracingTutorial
 
 	public virtual void render(ScriptableRenderContext context, Camera c) {
 		CameraShaderParams.setupCamera(c);
+
+		if (c.cameraType == CameraType.Game && RayTracingObjectManager.instance.enableAA)
+		{
+			_AAFrameCount++;
+		}
 	}
 
 	public virtual void dispose(bool isDisposing) {
@@ -31,6 +38,30 @@ public abstract class RayTracingTutorial
 		}
 
 		_outputTargetsCache.Clear();
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns>0: 停止渲染， 1: 关闭 AA， (0, 1) 使用上一帧的数据进行AA</returns>
+	public float getLerpAAVal()
+	{
+		if (!RayTracingObjectManager.instance.enableAA)
+		{
+			_AAFrameCount = 0;
+			// disable aa
+			return 1.0f;
+		}
+		else
+		{
+			float alphaAA = _AAFrameCount > 0 ? 1.0f / _AAFrameCount : 1.0f;
+			if (_AAFrameCount > 5000)
+			{
+				alphaAA = 0;
+			}
+
+			return alphaAA;
+		}
 	}
 
 	// the output target cache

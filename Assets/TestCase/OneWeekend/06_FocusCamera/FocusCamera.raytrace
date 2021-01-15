@@ -1,0 +1,75 @@
+﻿#include "./../../Common/RaygenCommon.hlsl"
+#include "./../../Common/PRNG.hlsl"
+
+RWTexture2D<float4> RenderTarget;
+float4 _RenderTargetSize;
+float _AlphaAA;
+int _EnableFocusCamera;
+
+#pragma max_recursion_depth 11
+// not work for raytracing shader.
+// #pragma multi_compile __ FOCUS_CAMERA_ON
+
+#define MAX_DEPTH (10)
+#define NUM_OF_SAMPLES (1)
+
+[shader("raygeneration")]
+void FocusCameraRayGenShader()
+{
+	const uint2 dispatchIdx = DispatchRaysIndex().xy;
+	const uint PRNGIndex = dispatchIdx.y * (int)_RenderTargetSize.x + dispatchIdx.x;
+	uint4 PRNGStates = _PRNGStates[PRNGIndex];
+
+	// 
+	float4 finalColor = float4(0, 0, 0, 0);
+	for (int i = 0; i < NUM_OF_SAMPLES; ++i) {
+		float3 origin;
+		float3 direction;
+		float2 offset = float2(getRandomValue(PRNGStates), getRandomValue(PRNGStates));
+
+		if (_EnableFocusCamera) {
+			float2 apertureOffset = getRandomInUnitDisk(PRNGStates);
+			generateFocusCameraRayWithOffset(origin, direction, offset, apertureOffset);
+		}
+		else {
+			generateCameraRayWithOffset(origin, direction, offset);
+		}
+
+
+		RayDesc rayDescriptor;
+		rayDescriptor.Origin = origin;
+		rayDescriptor.Direction = direction;
+		rayDescriptor.TMin = 1e-5f;
+		rayDescriptor.TMax = _CameraFarDistance;
+
+		RayIntersection rayIntersection;
+		rayIntersection.PRNGStates = PRNGStates;
+		rayIntersection.remainingDepth = MAX_DEPTH - 1;
+		rayIntersection.color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+		TraceRay(_AccelerationStructure, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, 0xFF, 0, 1, 0, rayDescriptor, rayIntersection);
+		PRNGStates = rayIntersection.PRNGStates;
+		finalColor += rayIntersection.color;
+	}
+	finalColor /= (float)NUM_OF_SAMPLES;
+
+	// use gamma 2. so square-root
+	finalColor = float4(sqrt(finalColor.r), sqrt(finalColor.g), sqrt(finalColor.b), finalColor.a);
+
+	_PRNGStates[PRNGIndex] = PRNGStates;
+
+	// lerp with last frame
+	finalColor = lerp(RenderTarget[dispatchIdx], finalColor, _AlphaAA);
+
+	RenderTarget[dispatchIdx] = finalColor;
+}
+
+
+[shader("miss")]
+void MissShader(inout RayIntersection rayIntersection: SV_RayPayload) {
+    float3 origin = WorldRayOrigin();
+    float3 direction = WorldRayDirection();
+
+    rayIntersection.color = float4(bgColor(origin, direction), 1.0f);
+}
+

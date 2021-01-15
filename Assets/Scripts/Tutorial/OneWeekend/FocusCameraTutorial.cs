@@ -1,17 +1,16 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class AntialiasingTutorial : RayTracingTutorial
+public class FocusCameraTutorial : RayTracingTutorial
 {
-	public AntialiasingTutorial(RayTracingTutorialAsset asset) : base(asset)
+	private FocusCamera _focusCamera = null;
+
+	public FocusCameraTutorial(RayTracingTutorialAsset asset) : base(asset)
 	{
-		
 	}
+
 
 	public override void render(ScriptableRenderContext context, Camera c)
 	{
@@ -29,6 +28,9 @@ public class AntialiasingTutorial : RayTracingTutorial
 		{
 			using (new ProfilingScope(cmd, new ProfilingSampler("RayTracing")))
 			{
+				// update focus camera
+				updateFocusCamera(cmd, c);
+
 				// for game objects which need to be raytraced
 				cmd.SetRayTracingShaderPass(_asset.shader, "MyRayTracing");
 				cmd.SetRayTracingAccelerationStructure(_asset.shader, SID_accelerationStructure, RayTracingObjectManager.instance.accelerationStructure);
@@ -37,7 +39,7 @@ public class AntialiasingTutorial : RayTracingTutorial
 				cmd.SetRayTracingBufferParam(_asset.shader, SID_PRNGStates, PRNGStates);
 				cmd.SetRayTracingTextureParam(_asset.shader, SID_outputTarget, outputTarget);
 				cmd.SetRayTracingVectorParam(_asset.shader, SID_outputTargetSize, outputTargetSize);
-				cmd.DispatchRays(_asset.shader, "AntialiasingRayGenShader", (uint)outputTarget.rt.width, (uint)outputTarget.rt.height, 1, c);
+				cmd.DispatchRays(_asset.shader, "FocusCameraRayGenShader", (uint)outputTarget.rt.width, (uint)outputTarget.rt.height, 1, c);
 			}
 			context.ExecuteCommandBuffer(cmd);
 
@@ -51,5 +53,29 @@ public class AntialiasingTutorial : RayTracingTutorial
 		{
 			CommandBufferPool.Release(cmd);
 		}
+	}
+
+	private void updateFocusCamera(CommandBuffer cmd, Camera c) {
+		do
+		{
+			if (c.cameraType != CameraType.Game)
+			{
+				// TODO:disable focus camera feature?
+				cmd.SetRayTracingIntParam(_asset.shader, "_EnableFocusCamera", 0);
+				break;
+			}
+
+			if (!c.enabled) break;
+
+			cmd.SetRayTracingIntParam(_asset.shader, "_EnableFocusCamera", 1);
+
+			// Game camera need handle focus camera logic
+			if (_focusCamera == null)
+			{
+				_focusCamera = c.GetComponent<FocusCamera>();
+			}
+
+			_focusCamera.updateShaderParams(cmd, _asset.shader);
+		} while (false);
 	}
 }
