@@ -37,10 +37,10 @@ inline float3 bgColor(float3 origin, float3 direction) {
 inline void generateCameraRay(out float3 origin, out float3 direction) {
 	// center in the middle of the pixel
 	float2 xy = DispatchRaysIndex().xy + 0.5f;
-	float2 screenPos = xy / DispatchRaysDimensions().xy * 2.0f - 1.0f;
+	float2 posInNDC = xy / DispatchRaysDimensions().xy * 2.0f - 1.0f;
 
 	// unproject the pixel coordinate into a ray
-	float4 worldPos = mul(_InvCameraViewProj, float4(screenPos, 0, 1));
+	float4 worldPos = mul(_InvCameraViewProj, float4(posInNDC, 0, 1));
 	worldPos.xyz /= worldPos.w;
 
 	origin = _WorldSpaceCameraPos.xyz;
@@ -50,10 +50,10 @@ inline void generateCameraRay(out float3 origin, out float3 direction) {
 inline void generateCameraRayWithOffset(out float3 origin, out float3 direction, float2 offset) {
 	// random offset for pixel
 	float2 xy = DispatchRaysIndex().xy + offset;
-	float2 screenPos = xy / DispatchRaysDimensions().xy * 2.0f - 1.0f;
+	float2 posInNDC = xy / DispatchRaysDimensions().xy * 2.0f - 1.0f;
 
 	// unproject the pixel coordinate into a ray
-	float4 worldPos = mul(_InvCameraViewProj, float4(screenPos, 0, 1));
+	float4 worldPos = mul(_InvCameraViewProj, float4(posInNDC, 0, 1));
 	worldPos.xyz /= worldPos.w;
 
 	origin = _WorldSpaceCameraPos.xyz;
