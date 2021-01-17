@@ -45,7 +45,9 @@ public class RayTracingRenderPipeline : RenderPipeline
 		});
 
 		// build acceleration structure
-		RayTracingObjectManager.instance.buildAccelerationStructure();
+		//RayTracingObjectManager.instance.buildAccelerationStructure();
+
+		RayTracingObjectManager.instance.updateAccelerationStructure();
 
 		foreach (Camera c in cameras)
 		{

@@ -14,6 +14,7 @@ public class RayTracingObjectManager : MonoBehaviour
 	private bool[] subMeshCutoffArr = new bool[MAX_NUM_SUBMESHES];
 
 	private bool _isDirty = true;
+	private bool _needBuild = true;
 
 	private RayTracingAccelerationStructure _accelerationStructure;
 	public RayTracingAccelerationStructure accelerationStructure { get { return _accelerationStructure; } }
@@ -76,11 +77,12 @@ public class RayTracingObjectManager : MonoBehaviour
 		renderers = renderersInChildren;
 
 		_isDirty = true;
+		_needBuild = true;
 	}
 
 	public void buildAccelerationStructure()
 	{
-		if (!_isDirty && isStaticObj) return;
+		if (_needBuild == false) return;
 
 		// create a new acceleration structure to clear
 		_accelerationStructure.Dispose();
@@ -93,6 +95,21 @@ public class RayTracingObjectManager : MonoBehaviour
 		}
 
 		_accelerationStructure.Build();
+
+		_needBuild = false;
+	}
+
+	public void updateAccelerationStructure() {
+		if (!_isDirty && isStaticObj) return;
+
+		buildAccelerationStructure();
+
+		foreach (Renderer r in renderers)
+		{
+			if (r) _accelerationStructure.UpdateInstanceTransform(r);
+		}
+
+		_accelerationStructure.Update();
 
 		_isDirty = false;
 	}
