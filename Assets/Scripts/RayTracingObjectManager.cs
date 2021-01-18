@@ -114,4 +114,8 @@ public class RayTracingObjectManager : MonoBehaviour
 		_isDirty = false;
 	}
 
+	public void dirty() {
+		_isDirty = true;
+	}
+
 }
