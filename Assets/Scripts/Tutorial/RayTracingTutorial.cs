@@ -115,6 +115,7 @@ public abstract class RayTracingTutorial
 	public readonly static int SID_accelerationStructure = Shader.PropertyToID("_AccelerationStructure");
 	public readonly static int SID_PRNGStates = Shader.PropertyToID("_PRNGStates");
 	public readonly static int SID_alphaAA = Shader.PropertyToID("_AlphaAA");
+	public readonly static int SID_skybox = Shader.PropertyToID("_SkyboxTex");
 
 	/////////////////////////////////////////////////////////////////////////
 	// Shader Params

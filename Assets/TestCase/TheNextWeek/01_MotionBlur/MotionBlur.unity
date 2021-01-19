@@ -187,7 +187,7 @@ PrefabInstance:
         type: 3}
       propertyPath: newRenderPipelineAsset
       value: 
-      objectReference: {fileID: 11400000, guid: 86bf0850555d4c64e84b4d88ffe23d81,
+      objectReference: {fileID: 11400000, guid: 4e8db43cac298c44b80205aee92d5c71,
         type: 2}
     - target: {fileID: 5750248550104930715, guid: 93f4331916c7dec4f817557fbbf878c0,
         type: 3}
@@ -298,7 +298,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 545236669}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ab6b802e310819d4d949e04980e82e1e, type: 3}
   m_Name: 
@@ -384,7 +384,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 05302c7ff726d6b4e9f58e8c50e3bdf6, type: 2}
+  - {fileID: 2100000, guid: f8f5bb124467c04469448f7ad62fb936, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -432,7 +432,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   focusDistance: 1.43
-  aperture: 0.1
+  aperture: 0
 --- !u!1 &825181966
 GameObject:
   m_ObjectHideFlags: 0
@@ -511,4 +511,4 @@ MonoBehaviour:
   renderers: []
   RayTracingObjectRoot: {fileID: 825181966}
   enableAA: 1
-  isStaticObj: 1
+  isStaticObj: 0
