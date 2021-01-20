@@ -19,6 +19,7 @@ struct RayIntersection {
 	float4 color;
 	uint4 PRNGStates;
 	int remainingDepth;
+	float innerRayHitT; // for calculate distance inside boundary.
 };
 
 struct AttributeData {
