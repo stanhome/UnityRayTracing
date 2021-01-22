@@ -1,4 +1,4 @@
-﻿Shader "RayTracing/DiffuseObj"
+﻿Shader "Raytracing/DiffuseWithLightSampleObj"
 {
     Properties
     {
@@ -97,6 +97,40 @@
 				return max(0.0f, cosVal / M_PI);
 			}
 
+			void lightSample(float3 normalInWorld, RayIntersection rayIntersection, float3 posInWorld, out float3 scatterDir, out float pdf) {
+				ONB uvw;
+				buildONBFromNormal(uvw, normalInWorld);
+
+				scatterDir = localONB(uvw, getRandomCosineDirection(rayIntersection.PRNGStates));
+				pdf = dot(normalInWorld, scatterDir) / M_PI;
+
+				if (getRandomValue(rayIntersection.PRNGStates) < 0.5f)
+					return;
+
+				// Light sample, copy from Lgiht Transform
+				const float3 TO_SAMPLE_LIGHT_MIN = float3(-110, 599, -55);
+				const float3 TO_SAMPLE_LIGHT_MAX = float3(110, 599, 55);
+
+				float3 onLight = float3(
+				TO_SAMPLE_LIGHT_MIN.x + getRandomValue(rayIntersection.PRNGStates) * (TO_SAMPLE_LIGHT_MAX.x - TO_SAMPLE_LIGHT_MIN.x),
+				TO_SAMPLE_LIGHT_MIN.y,
+				TO_SAMPLE_LIGHT_MIN.z + getRandomValue(rayIntersection.PRNGStates) * (TO_SAMPLE_LIGHT_MAX.z - TO_SAMPLE_LIGHT_MIN.z));
+
+				float3 toLight = onLight - posInWorld;
+				float distanceSquared = dot(toLight, toLight);
+				toLight = normalize(toLight);
+
+				if (dot(toLight, normalInWorld) < 0.0f) return;
+
+				float lightCosine = abs(toLight.y);
+				if (lightCosine < 1e-6f) return;
+
+				float lightArea = (TO_SAMPLE_LIGHT_MAX.x - TO_SAMPLE_LIGHT_MIN.x) * (TO_SAMPLE_LIGHT_MAX.z - TO_SAMPLE_LIGHT_MIN.z);
+
+				scatterDir = toLight;
+				pdf = distanceSquared / (lightCosine * lightArea);
+			}
+
 			[shader("closesthit")]
 			void closestHitShader(inout RayIntersection rayIntersection: SV_RayPayload, AttributeData attributeData: SV_IntersectionAttributes) {
 				// fetch the indices of the current triangle
@@ -126,14 +160,15 @@
 					float t = RayTCurrent();
 					float3 posInWorld = origin + direction * t;
 
-					ONB uvw;
-					buildONBFromNormal(uvw, normalInWorld);
+					float3 scatterDir;
+					float pdf;
+					lightSample(normalInWorld, rayIntersection, posInWorld, scatterDir, pdf);
 
 					// create reflection ray
 					RayDesc rayDescriptor;
 					rayDescriptor.Origin = posInWorld + 0.001f * normalInWorld;
 					// direction = normalize(pos + N + randomOnSphere - pos)
-					rayDescriptor.Direction = localONB(uvw, getRandomCosineDirection(rayIntersection.PRNGStates));
+					rayDescriptor.Direction = scatterDir;
 					rayDescriptor.TMin = 1e-5f;
 					rayDescriptor.TMax = _CameraFarDistance;
 
@@ -143,12 +178,11 @@
 					reflectionRayIntersection.PRNGStates = rayIntersection.PRNGStates;
 					reflectionRayIntersection.color = float4(0, 0, 0, 0);
 
-					float pdf = dot(normalInWorld, rayDescriptor.Direction) / M_PI;
-
 					TraceRay(_AccelerationStructure, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, 0xFF, 0, 1, 0, rayDescriptor, reflectionRayIntersection);
 
 					rayIntersection.PRNGStates = reflectionRayIntersection.PRNGStates;
 					outColor = scatteringPDF(origin, direction, normalInWorld, rayDescriptor.Direction) * reflectionRayIntersection.color / pdf;
+					outColor = max(float4(0, 0, 0, 0), outColor);
 				}
 
 				rayIntersection.color = texColor * 0.5f * outColor;
